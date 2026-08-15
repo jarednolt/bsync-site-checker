@@ -1,0 +1,17 @@
+{
+  "name": "rm-site-checker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "On-demand accessibility and link/alt-text health checker built on Screaming Frog crawl exports.",
+  "scripts": {
+    "site-check": "node scripts/site-check.js",
+    "ui": "node server/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Site Checker</title>
+<link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <div class="header-row">
+      <div>
+        <h1>Site Checker</h1>
+        <p class="subtitle">Broken links, alt text, ARIA/roles, and color contrast — via Screaming Frog</p>
+      </div>
+      <button id="open-settings" type="button" class="link-button">Settings</button>
+    </div>
+    <div id="setup-banner" class="banner" hidden>
+      <span id="setup-banner-text"></span>
+      <button id="open-settings-from-banner" type="button">Open Settings</button>
+    </div>
+  </header>
+
+  <dialog id="settings-dialog">
+    <h2>Settings</h2>
+    <p class="hint">Save each config once in Screaming Frog via <code>Configuration &gt; Profiles &gt; Save As...</code> (not <code>File &gt; Save As...</code>, which saves a crawl's data instead of a settings profile) and point at it here.</p>
+    <form id="settings-form">
+      <label>
+        Screaming Frog CLI path
+        <input id="settings-sf-cli" type="text" placeholder="/Applications/Screaming Frog SEO Spider.app/Contents/MacOS/ScreamingFrogSEOSpiderLauncher" />
+        <span class="field-status" id="settings-sf-cli-status"></span>
+      </label>
+      <label>
+        Whole-site crawl config (.seospiderconfig) path
+        <input id="settings-sf-config" type="text" placeholder="/path/to/your-saved.seospiderconfig" />
+        <span class="field-status" id="settings-sf-config-status"></span>
+        <span class="field-hint">Enable Accessibility extraction + JavaScript rendering under <code>Config &gt; Spider</code> before saving. Used for "Whole site" checks.</span>
+      </label>
+      <label>
+        Specific-pages crawl config (.seospiderconfig) path
+        <input id="settings-sf-pages-config" type="text" placeholder="/path/to/your-saved-pages.seospiderconfig" />
+        <span class="field-status" id="settings-sf-pages-config-status"></span>
+        <span class="field-hint">Same as above, plus <code>Config &gt; Spider &gt; Limits &gt; Limit Crawl Depth</code> set to <strong>0</strong> — otherwise "Specific pages" checks will spider outward instead of staying scoped. Must be a separate saved config from the one above. Used for "Specific pages" checks.</span>
+      </label>
+      <div class="dialog-actions">
+        <button id="settings-cancel" type="button">Close</button>
+        <button type="submit">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <main>
+    <section class="card" id="check-form-section">
+      <h2>New check</h2>
+      <form id="check-form">
+        <fieldset class="mode-fieldset">
+          <label class="radio-label"><input type="radio" name="check-mode" value="domain" checked /> Whole site <span class="field-hint">— spiders outward from each URL; multiple URLs get separate reports, run one after another</span></label>
+          <label class="radio-label"><input type="radio" name="check-mode" value="pages" /> Specific pages <span class="field-hint">— checks only the exact URLs given, no link-following</span></label>
+        </fieldset>
+
+        <label id="label-field" hidden>
+          Label this list of pages
+          <input id="pages-label" type="text" placeholder="e.g. Westbench product pages" />
+        </label>
+
+        <textarea id="urls-input" placeholder="One URL per line&#10;https://example.com&#10;https://staging.example.com" rows="3"></textarea>
+
+        <fieldset class="mode-fieldset">
+          <label class="radio-label"><input type="radio" name="check-when" value="now" checked /> Run now</label>
+          <label class="radio-label"><input type="radio" name="check-when" value="later" /> Schedule for later</label>
+        </fieldset>
+        <input id="schedule-at" type="datetime-local" hidden />
+
+        <button type="submit">Run check</button>
+        <p id="check-form-error" class="error-text" hidden></p>
+      </form>
+      <div id="progress-panel" hidden>
+        <h3>Progress</h3>
+        <div id="progress-jobs"></div>
+      </div>
+    </section>
+
+    <section class="card" id="scheduled-section" hidden>
+      <h2>Scheduled checks</h2>
+      <ul id="scheduled-list"></ul>
+    </section>
+
+    <div class="columns">
+      <section class="card" id="history-section">
+        <h2>Run history</h2>
+        <ul id="run-list"><li class="empty">No runs yet.</li></ul>
+      </section>
+
+      <section class="card" id="trends-section">
+        <h2>Trends</h2>
+        <label for="trend-target">Target</label>
+        <select id="trend-target"><option value="">No targets yet</option></select>
+        <div id="trend-charts"></div>
+      </section>
+    </div>
+
+    <section class="card" id="detail-section" hidden>
+      <button id="back-to-history" type="button">&larr; Back to history</button>
+      <h2 id="detail-title"></h2>
+      <div class="filters">
+        <select id="filter-category"><option value="">All categories</option></select>
+        <select id="filter-status">
+          <option value="">All statuses</option>
+          <option value="new">New</option>
+          <option value="persisting">Persisting</option>
+          <option value="resolved">Resolved</option>
+        </select>
+        <input id="filter-search" type="search" placeholder="Search issue text..." />
+        <a id="download-csv" href="#" download>Download CSV</a>
+      </div>
+      <table id="issues-table">
+        <thead>
+          <tr><th>Target</th><th>Category</th><th>Status</th><th>Issue</th><th>Count</th><th>Pages</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <p id="issues-empty" class="empty" hidden>No issues match the current filters.</p>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

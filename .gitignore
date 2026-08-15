@@ -1,0 +1,6 @@
+runs/
+node_modules/
+.DS_Store
+screaming-frog/*.seospiderconfig
+config.json
+scheduled.json
